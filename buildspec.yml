@@ -1,0 +1,23 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      python: 3.8
+      nodejs: 18
+    commands:
+      - echo "Setting up environment..."
+      - python3 -m venv .env
+      - source .env/bin/activate
+      - pip install -r requirements.txt
+      - find cdk/stack_1/lambda/lambda1 -name "package.json" -execdir npm install \;
+
+  build:
+    commands:
+      - echo "Synthesizing CDK..."
+      - cdk synth
+
+artifacts:
+  files:
+    - "**/*"
+  base-directory: cdk.out
