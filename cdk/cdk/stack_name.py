@@ -11,19 +11,18 @@ class LambdaPipelineStack(core.Stack):
 
         github_token =core.SecretValue.plain_text('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')
 
-        # Define the source code for the pipeline (GitHub repository)
         source = CodePipelineSource.git_hub("tirth-b/cicd-test", "main", authentication=github_token)
 
-        # Create the pipeline
         pipeline = pipelines.CodePipeline(self, "LambdaPipeline",
                                           pipeline_name="LambdaDeployPipeline",
                                           synth=pipelines.ShellStep("Synth",
                                                                     input=source,
                                                                     commands=[
-                                                                        "npm install",
-                                                                        "npm run build",
-                                                                        "npx cdk synth"
+                                                                        # Install Python dependencies
+                                                                        "python3 -m venv .env",
+                                                                        "source .env/bin/activate",
+                                                                        "pip install -r requirements.txt",
+                                                                        # Synthesize the CDK app
+                                                                        "cdk synth"
                                                                     ]))
-
-        # Define the deploy stages for each Lambda stack
         pipeline.add_stage(LambdaStage(self, "LambdaStage1"))
